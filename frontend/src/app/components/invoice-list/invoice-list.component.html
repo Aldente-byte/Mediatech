@@ -1,0 +1,27 @@
+<div class="container">
+    <header>
+        <h1>Invoices</h1>
+        <button (click)="logout()">Logout</button>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Client</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let invoice of invoices">
+                <td>{{ invoice.id }}</td>
+                <td>{{ invoice.client?.name || 'N/A' }}</td>
+                <td>{{ invoice.issueDate }}</td>
+                <td>{{ invoice.amount }}</td>
+                <td>{{ invoice.status }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
