@@ -24,6 +24,7 @@ import { InvoiceService, Invoice } from '../../services/invoice.service';
             <th>ID</th>
             <th>Client</th>
             <th>Amount</th>
+            <th>Product</th>
             <th>Status</th>
             <th>Issued Date</th>
           </tr>
@@ -39,11 +40,18 @@ import { InvoiceService, Invoice } from '../../services/invoice.service';
             </td>
             <td class="amount">\${{ invoice.amount }}</td>
             <td>
+                <span *ngIf="invoice.lines && invoice.lines.length > 0">
+                    {{ invoice.lines[0].product?.name }}
+                    <span *ngIf="invoice.lines.length > 1" class="text-muted">(+{{ invoice.lines.length - 1 }} others)</span>
+                </span>
+                <span *ngIf="!invoice.lines || invoice.lines.length === 0" class="text-muted">-</span>
+            </td>
+            <td>
               <span class="status-badge" [class.paid]="invoice.status === 'PAID'" [class.pending]="invoice.status === 'PENDING'">
                 {{ invoice.status || 'PENDING' }}
               </span>
             </td>
-            <td class="text-muted">2023-12-16</td> 
+            <td class="text-muted">{{ invoice.issueDate | date:'mediumDate' }}</td> 
           </tr>
         </tbody>
       </table>

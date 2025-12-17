@@ -42,8 +42,8 @@ public class InvoiceService {
     @Transactional
     public Invoice createInvoiceComplex(InvoiceRequest request) {
         Invoice invoice = new Invoice();
-        invoice.setIssueDate(request.getIssueDate());
-        invoice.setStatus(request.getStatus());
+        invoice.setIssueDate(request.getIssueDate() != null ? request.getIssueDate() : java.time.LocalDate.now());
+        invoice.setStatus(request.getStatus() != null ? request.getStatus() : "PENDING");
 
         Client client = clientRepository.findById(request.getClientId())
                 .orElseThrow(() -> new RuntimeException("Client non trouvé"));
@@ -97,6 +97,39 @@ public class InvoiceService {
                     return invoiceRepository.save(invoice);
                 })
                 .orElse(null);
+    }
+
+    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 5000) // Every 5 seconds (Faster for demo)
+    public void processPendingInvoices() {
+        List<Invoice> allInvoices = invoiceRepository.findAll();
+
+        for (Invoice invoice : allInvoices) {
+            boolean changed = false;
+
+            // Heal: Fix missing data from old version
+            if (invoice.getIssueDate() == null) {
+                invoice.setIssueDate(java.time.LocalDate.now());
+                changed = true;
+            }
+            if (invoice.getStatus() == null) {
+                invoice.setStatus("PENDING");
+                changed = true;
+            }
+
+            // Auto-Pay Logic for PENDING invoices
+            if ("PENDING".equals(invoice.getStatus())) {
+                // 80% chance to pay each cycle
+                if (Math.random() > 0.2) {
+                    invoice.setStatus("PAID");
+                    changed = true;
+                    System.out.println("Auto-Paid Invoice #" + invoice.getId());
+                }
+            }
+
+            if (changed) {
+                invoiceRepository.save(invoice);
+            }
+        }
     }
 
     public void deleteInvoice(Long id) {

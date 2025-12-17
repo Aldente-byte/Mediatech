@@ -82,6 +82,7 @@ import { ProductService, Product } from '../../services/product.service';
                 <span [class.text-danger]="product.stock < 10">{{ product.stock }}</span>
             </td>
             <td>
+              <button class="btn-icon" (click)="edit(product)" title="Edit">✏️</button>
               <button class="btn-icon danger" (click)="delete(product.id!)" title="Delete">🗑️</button>
             </td>
           </tr>
@@ -166,18 +167,36 @@ export class ProductListComponent implements OnInit {
   save() {
     if (!this.isValid()) return;
 
-    this.productService.create(this.newProduct).subscribe({
-      next: () => {
-        this.loadProducts();
-        this.showForm = false; // Close form on success
-        this.newProduct = { name: '', category: '', price: 0, stock: 0 }; // Reset
-        this.showSuccess('Product added successfully!');
-      },
-      error: (err) => {
-        console.error(err);
-        this.showError('Failed to save product. ' + (err.error?.message || 'Server error'));
-      }
-    });
+    if (this.newProduct.id) {
+      // Update
+      this.productService.update(this.newProduct.id, this.newProduct).subscribe({
+        next: () => {
+          this.loadProducts();
+          this.showForm = false;
+          this.newProduct = { name: '', category: '', price: 0, stock: 0 };
+          this.showSuccess('Product updated!');
+        },
+        error: () => this.showError('Failed to update product')
+      });
+    } else {
+      // Create
+      this.productService.create(this.newProduct).subscribe({
+        next: () => {
+          this.loadProducts();
+          this.showForm = false;
+          this.newProduct = { name: '', category: '', price: 0, stock: 0 };
+          this.showSuccess('Product added successfully!');
+        },
+        error: (err) => {
+          this.showError('Failed to save product. ' + (err.error?.message || 'Server error'));
+        }
+      });
+    }
+  }
+
+  edit(product: Product) {
+    this.newProduct = { ...product }; // Copy to avoid direct mutation
+    this.showForm = true;
   }
 
   delete(id: number) {

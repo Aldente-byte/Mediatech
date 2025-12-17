@@ -28,6 +28,18 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public Product updateProduct(Long id, Product details) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    product.setName(details.getName());
+                    product.setCategory(details.getCategory());
+                    product.setPrice(details.getPrice());
+                    product.setStock(details.getStock());
+                    return productRepository.save(product);
+                })
+                .orElse(null);
+    }
+
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
