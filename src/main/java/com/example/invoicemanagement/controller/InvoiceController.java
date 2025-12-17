@@ -13,9 +13,12 @@ import java.util.List;
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+    private final com.example.invoicemanagement.service.PdfService pdfService;
 
-    public InvoiceController(InvoiceService invoiceService) {
+    public InvoiceController(InvoiceService invoiceService,
+            com.example.invoicemanagement.service.PdfService pdfService) {
         this.invoiceService = invoiceService;
+        this.pdfService = pdfService;
     }
 
     @GetMapping
@@ -28,6 +31,25 @@ public class InvoiceController {
         return invoiceService.getInvoiceById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getInvoicePdf(@PathVariable Long id) {
+        java.util.Optional<Invoice> invoiceOpt = invoiceService.getInvoiceById(id);
+        if (invoiceOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            byte[] pdfBytes = pdfService.generateInvoicePdf(invoiceOpt.get());
+            return ResponseEntity.ok()
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=invoice_" + id + ".pdf")
+                    .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
+        } catch (java.io.IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping

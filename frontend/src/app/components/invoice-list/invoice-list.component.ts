@@ -27,6 +27,7 @@ import { InvoiceService, Invoice } from '../../services/invoice.service';
             <th>Product</th>
             <th>Status</th>
             <th>Issued Date</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -52,6 +53,9 @@ import { InvoiceService, Invoice } from '../../services/invoice.service';
               </span>
             </td>
             <td class="text-muted">{{ invoice.issueDate | date:'mediumDate' }}</td> 
+            <td>
+                <button class="btn-icon" (click)="downloadPdf(invoice)" title="Download PDF">📄</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -112,6 +116,21 @@ export class InvoiceListComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => this.showError('Failed to load invoices')
+    });
+  }
+
+  downloadPdf(invoice: Invoice) {
+    if (!invoice.id) return;
+    this.invoiceService.downloadPdf(invoice.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `invoice_${invoice.id}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => this.showError('Failed to download PDF')
     });
   }
 

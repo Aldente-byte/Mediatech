@@ -33,4 +33,8 @@ export class InvoiceService {
     delete(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
+
+    downloadPdf(id: number): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/${id}/pdf`, { responseType: 'blob' });
+    }
 }
