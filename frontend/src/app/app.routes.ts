@@ -5,11 +5,13 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { ClientListComponent } from './components/client-list/client-list.component';
 import { ShopComponent } from './components/shop/shop.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { RegisterComponent } from './components/register/register.component';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
     {
         path: 'shop',
         component: ShopComponent,

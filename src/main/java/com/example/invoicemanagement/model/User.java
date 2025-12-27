@@ -22,4 +22,8 @@ public class User {
 
     @Column(nullable = false)
     private String role = "ROLE_USER";
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "client_id")
+    private Client client;
 }

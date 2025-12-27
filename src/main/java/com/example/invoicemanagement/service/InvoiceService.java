@@ -35,6 +35,10 @@ public class InvoiceService {
         return invoiceRepository.findAll();
     }
 
+    public List<Invoice> getInvoicesByClientId(Long clientId) {
+        return invoiceRepository.findByClientId(clientId);
+    }
+
     public Optional<Invoice> getInvoiceById(Long id) {
         return invoiceRepository.findById(id);
     }

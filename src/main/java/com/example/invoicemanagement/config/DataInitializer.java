@@ -99,13 +99,39 @@ public class DataInitializer {
             }
 
             if (userRepository.findByUsername("commercial").isEmpty()) {
+                // Create Client for commercial user
+                Client commercialClient = new Client();
+                commercialClient.setName("Commercial Account");
+                commercialClient.setEmail("commercial@example.com");
+                commercialClient.setAddress("Business Address");
+                commercialClient = clientRepository.save(commercialClient);
+                
                 User commercial = new User();
                 commercial.setUsername("commercial");
                 commercial.setPassword(passwordEncoder.encode("commercial"));
                 commercial.setRole("ROLE_USER");
+                commercial.setClient(commercialClient);
                 userRepository.save(commercial);
                 System.out.println("Utilisateur créé : commercial / commercial");
+            } else {
+                // Ensure existing commercial user has a client
+                User commercial = userRepository.findByUsername("commercial").get();
+                if (commercial.getClient() == null) {
+                    Client commercialClient = new Client();
+                    commercialClient.setName("Commercial Account");
+                    commercialClient.setEmail("commercial@example.com");
+                    commercialClient.setAddress("Business Address");
+                    commercialClient = clientRepository.save(commercialClient);
+                    commercial.setClient(commercialClient);
+                    userRepository.save(commercial);
+                    System.out.println("Client créé pour l'utilisateur commercial");
+                }
             }
         };
     }
 }
+
+
+
+
+//nitialise la base de données avec des données par défaut

@@ -70,4 +70,8 @@ export class AuthService {
     isAdmin(): boolean {
         return this.getRole() === 'ROLE_ADMIN';
     }
+
+    getCurrentUser(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/me`);
+    }
 }

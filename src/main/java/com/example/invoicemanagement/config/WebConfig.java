@@ -16,3 +16,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 }
+
+
+
+
+//angulaire peut appeler les API Spring Boot sans problèmes, permet a angular to connect to backend
